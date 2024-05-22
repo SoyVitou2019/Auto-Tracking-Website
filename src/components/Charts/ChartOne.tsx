@@ -1,146 +1,155 @@
-import { ApexOptions } from 'apexcharts';
-import React, { useState } from 'react';
-import ReactApexChart from 'react-apexcharts';
 
-const options: ApexOptions = {
-  legend: {
-    show: false,
-    position: 'top',
-    horizontalAlign: 'left',
-  },
-  colors: ['#FF2D00', '#08FF00'],
-  chart: {
-    fontFamily: 'Satoshi, sans-serif',
-    height: 335,
-    zoom: {
-      enabled: true
-    },
-    type: 'area',
-    dropShadow: {
-      enabled: true,
-      color: '#623CEA14',
-      top: 10,
-      blur: 4,
-      left: 0,
-      opacity: 0.1,
-    },
-
-    toolbar: {
+  import { ApexOptions } from 'apexcharts';
+  import React, { useState } from 'react';
+  import ReactApexChart from 'react-apexcharts';
+  
+  const options: ApexOptions = {
+    legend: {
       show: false,
+      position: 'top',
+      horizontalAlign: 'left',
     },
-  },
-  responsive: [
-    {
-      breakpoint: 1024,
-      options: {
-        chart: {
-          height: 300,
+    colors: ['#08FF00', '#FF0000'],
+    chart: {
+      fontFamily: 'Satoshi, sans-serif',
+      height: 335,
+      type: 'area',
+      dropShadow: {
+        enabled: true,
+        color: '#623CEA14',
+        top: 10,
+        blur: 4,
+        left: 0,
+        opacity: 0.1,
+      },
+      toolbar: {
+        show: true, // Enable the toolbar for zoom and pan
+        autoSelected: 'zoom' // Default to the zoom tool
+      },
+      zoom: {
+        enabled: true, // Enable zooming
+        type: 'x', // Allow zooming along the x-axis only
+        autoScaleYaxis: true, // Automatically adjust the y-axis when zooming
+      },
+    },
+    responsive: [
+      {
+        breakpoint: 1024,
+        options: {
+          chart: {
+            height: 300,
+          },
+        },
+      },
+      {
+        breakpoint: 1366,
+        options: {
+          chart: {
+            height: 350,
+          },
+        },
+      },
+    ],
+    stroke: {
+      width: [2, 2],
+      curve: 'stepline',
+    },
+    grid: {
+      xaxis: {
+        lines: {
+          show: true,
+        },
+      },
+      yaxis: {
+        lines: {
+          show: true,
         },
       },
     },
-    {
-      breakpoint: 1366,
-      options: {
-        chart: {
-          height: 350,
-        },
+    dataLabels: {
+      enabled: false,
+    },
+    markers: {
+      size: 4,
+      colors: '#fff',
+      strokeColors: ['#3056D3', '#80CAEE'],
+      strokeWidth: 3,
+      strokeOpacity: 0.9,
+      strokeDashArray: 0,
+      fillOpacity: 1,
+      discrete: [],
+      hover: {
+        size: undefined,
+        sizeOffset: 5,
       },
     },
-  ],
-  stroke: {
-    width: [2, 2],
-    curve: 'straight',
-  },
-  // labels: {
-  //   show: false,
-  //   position: "top",
-  // },
-  grid: {
     xaxis: {
-      lines: {
-        show: true,
+      type: 'category',
+      categories: [
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+      ],
+      axisBorder: {
+        show: false,
       },
-    },
-    yaxis: {
-      lines: {
+      axisTicks: {
         show: false,
       },
     },
-  },
-  dataLabels: {
-    enabled: false,
-  },
-  markers: {
-    size: 1,
-    colors: '#fff',
-    strokeColors: ['#3056D3', '#80CAEE'],
-    strokeWidth: 3,
-    strokeOpacity: 0.9,
-    strokeDashArray: 0,
-    fillOpacity: 1,
-    discrete: [],
-    hover: {
-      size: undefined,
-      sizeOffset: 5,
-    },
-  },
-  xaxis: {
-    type: 'category',
-    categories: [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ],
-    axisBorder: {
-      show: false,
-    },
-    axisTicks: {
-      show: false,
-    },
-  },
-  // yaxis: {
-  //   labels: {
-  //     show: false,  // This line hides the y-axis labels
-  //   },
-  // },
-};
-
-interface ChartOneState {
-  series: {
-    name: string;
-    data: number[];
-  }[];
-}
-
-const ChartOne: React.FC = () => {
-  const [state, setState] = useState<ChartOneState>({
-    series: [
-      {
-        name: 'Enjoying',
-        data: [0, 1, 0, 0, 0, 1, 1, 1, 0],
+    yaxis: {
+      title: {
+        style: {
+          fontSize: '0px',
+        },
       },
-      {
-        name: 'Studying',
-        data: [1, 0, 1, 1, 1, 0, 0, 0, 1],
-      }
-    ],
-  });
-
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-    }));
+      min: 0,
+      max: 1,
+    },
   };
-  handleReset;
+  
+  interface ChartOneState {
+    series: {
+      name: string;
+      data: number[];
+    }[];
+  }
+  
+  const ChartOne: React.FC = () => {
+    const [selectBtn, setSelectBtn] = useState("Day");
+
+    const handleSelectBtn = (value: string) => {
+      setSelectBtn(value);
+    };
+    const [state, setState] = useState<ChartOneState>({
+      series: [
+        {
+          name: 'Studying',
+          data: [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+        },
+        {
+          name: 'Enjoying',
+          data: [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0].map(value => value === 1 ? 0 : 1),
+        },
+      ],
+    });
+    
+  
+    const handleReset = () => {
+      setState((prevState) => ({
+        ...prevState,
+      }));
+    };
+    handleReset;
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
@@ -165,24 +174,30 @@ const ChartOne: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex w-full max-w-45 justify-end">
+        <div className="flex w-full max-w-45 justify-center">
           <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
             <button className="rounded py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
+              Auto
+            </button>
+          </div>
+        </div>
+        <div className="flex w-full max-w-45 justify-end">
+          <div className="inline-flex items-center rounded-md bg-whiter p-1.5 dark:bg-meta-4">
+            <button onClick={() => handleSelectBtn("Day")} className={`${selectBtn === "Day" ? "dark:bg-boxdark" : ""} rounded py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark`}>
               Day
             </button>
-            <button className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
+            <button onClick={() => handleSelectBtn("Week")} className={`${selectBtn === "Week" ? "dark:bg-boxdark" : ""} rounded py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark`}>
               Week
             </button>
-            <button className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark">
+            <button onClick={() => handleSelectBtn("Month")} className={`${selectBtn === "Month" ? "dark:bg-boxdark" : ""} rounded py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark`}>
               Month
             </button>
-            <button className="rounded py-1 px-3 text-xs font-medium text-black hover:bg-white hover:shadow-card dark:text-white dark:bg-boxdark">
+            <button onClick={() => handleSelectBtn("Year")} className={`${selectBtn === "Year" ? "dark:bg-boxdark" : ""} rounded py-1 px-3 text-xs font-medium text-black shadow-card hover:bg-white hover:shadow-card dark:text-white dark:hover:bg-boxdark`}>
               Year
             </button>
           </div>
         </div>
       </div>
-
       <div>
         <div id="chartOne" className="-ml-5">
           <ReactApexChart
