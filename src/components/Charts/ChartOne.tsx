@@ -1,155 +1,59 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { createChart, IChartApi } from 'lightweight-charts';
 
-  import { ApexOptions } from 'apexcharts';
-  import React, { useState } from 'react';
-  import ReactApexChart from 'react-apexcharts';
-  
-  const options: ApexOptions = {
-    legend: {
-      show: false,
-      position: 'top',
-      horizontalAlign: 'left',
-    },
-    colors: ['#08FF00', '#FF0000'],
-    chart: {
-      fontFamily: 'Satoshi, sans-serif',
-      height: 335,
-      type: 'area',
-      dropShadow: {
-        enabled: true,
-        color: '#623CEA14',
-        top: 10,
-        blur: 4,
-        left: 0,
-        opacity: 0.1,
-      },
-      toolbar: {
-        show: true, // Enable the toolbar for zoom and pan
-        autoSelected: 'zoom' // Default to the zoom tool
-      },
-      zoom: {
-        enabled: true, // Enable zooming
-        type: 'x', // Allow zooming along the x-axis only
-        autoScaleYaxis: true, // Automatically adjust the y-axis when zooming
-      },
-    },
-    responsive: [
-      {
-        breakpoint: 1024,
-        options: {
-          chart: {
-            height: 300,
-          },
-        },
-      },
-      {
-        breakpoint: 1366,
-        options: {
-          chart: {
-            height: 350,
-          },
-        },
-      },
-    ],
-    stroke: {
-      width: [2, 2],
-      curve: 'stepline',
-    },
-    grid: {
-      xaxis: {
-        lines: {
-          show: true,
-        },
-      },
-      yaxis: {
-        lines: {
-          show: true,
-        },
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    markers: {
-      size: 4,
-      colors: '#fff',
-      strokeColors: ['#3056D3', '#80CAEE'],
-      strokeWidth: 3,
-      strokeOpacity: 0.9,
-      strokeDashArray: 0,
-      fillOpacity: 1,
-      discrete: [],
-      hover: {
-        size: undefined,
-        sizeOffset: 5,
-      },
-    },
-    xaxis: {
-      type: 'category',
-      categories: [
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-      ],
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-    },
-    yaxis: {
-      title: {
-        style: {
-          fontSize: '0px',
-        },
-      },
-      min: 0,
-      max: 1,
-    },
+const ChartOne: React.FC = () => {
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<IChartApi | null>(null);
+  const [selectBtn, setSelectBtn] = useState("Day");
+
+  useEffect(() => {
+    if (!chartContainerRef.current) return;
+
+    const chartProperties = {
+      width: chartContainerRef.current.clientWidth,
+      height: 300,
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+      }
+    };
+
+    const chart = createChart(chartContainerRef.current, chartProperties);
+    chartRef.current = chart;
+
+    const candleSeries = chart.addCandlestickSeries();
+
+    fetch("https://api.binance.com/api/v3/klines?symbol=ETHUSDT&interval=1d&limit=1000")
+      .then(res => res.json())
+      .then(data => {
+        const cdata = data.map((d: any) => ({
+          time: d[0] / 1000,
+          open: parseFloat(d[1]),
+          high: parseFloat(d[2]),
+          low: parseFloat(d[3]),
+          close: parseFloat(d[4]),
+        }));
+        candleSeries.setData(cdata);
+      })
+      .catch(err => console.error(err));
+
+    const handleResize = () => {
+      if (chartContainerRef.current) {
+        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
+    };
+  }, []);
+
+  const handleSelectBtn = (value: string) => {
+    setSelectBtn(value);
   };
-  
-  interface ChartOneState {
-    series: {
-      name: string;
-      data: number[];
-    }[];
-  }
-  
-  const ChartOne: React.FC = () => {
-    const [selectBtn, setSelectBtn] = useState("Day");
-
-    const handleSelectBtn = (value: string) => {
-      setSelectBtn(value);
-    };
-    const [state, setState] = useState<ChartOneState>({
-      series: [
-        {
-          name: 'Studying',
-          data: [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
-        },
-        {
-          name: 'Enjoying',
-          data: [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0].map(value => value === 1 ? 0 : 1),
-        },
-      ],
-    });
-    
-  
-    const handleReset = () => {
-      setState((prevState) => ({
-        ...prevState,
-      }));
-    };
-    handleReset;
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
@@ -200,12 +104,7 @@
       </div>
       <div>
         <div id="chartOne" className="-ml-5">
-          <ReactApexChart
-            options={options}
-            series={state.series}
-            type="area"
-            height={350}
-          />
+          <div id="tvchart" ref={chartContainerRef}></div>
         </div>
       </div>
     </div>
