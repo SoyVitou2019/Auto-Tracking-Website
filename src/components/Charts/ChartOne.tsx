@@ -17,7 +17,6 @@ const ChartOne: React.FC = () => {
         secondsVisible: false,
       }
     };
-
     const chart = createChart(chartContainerRef.current, chartProperties);
     chartRef.current = chart;
 
